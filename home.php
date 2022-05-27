@@ -7,13 +7,13 @@ Proteger();
 <head>
 	<title>Projeto</title>
 	<meta charset="utf-8">
-	  <!-- Compiled and minified CSS -->
-<!--     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+	 
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
- -->
-    <!-- Compiled and minified JavaScript -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
             
 </head>
 <body>
@@ -40,18 +40,12 @@ Proteger();
 								<label for="nome">Nome do jogo: </label>
 							</div>
 							<div class="input-field col s3">
-								<select name="categoria">
-									<label for="categoria">Categoria: </label>
-									<option>Selecione...</option>
-									<?php 
-										$todas = ListarCategorias();
-										while($cat = $todas->fetch_object()){
-											echo '<option value="'.$cat->cd.'">';
-											echo $cat->nome;
-											echo '</option>';
-										}
-									?>
-								</select>
+								<?php 
+								$todas = ListarCategorias();
+									while($cat = $todas->fetch_object()){
+										echo '<p><label><input name="categoria" type="radio" value="'.$cat->cd.'"/><span>'.$cat->nome.'</span></label></p>';
+									}
+								?>
 							</div>
 							<div class="input-field col s3">
 								<input type="submit" class="btn" value="Cadastrar">
@@ -61,17 +55,24 @@ Proteger();
 				</form>
 			</div>
 		</div>
+		<div class="col s8 m8 offset-s2 offset-m2">
+			<h1>Meus Jogos:</h1>
+			<?php 
+				if(isset($_POST['nome'])){
+					$sql = 'INSERT INTO jogo (nome, id_usuario, id_categoria) VALUES ("'.$_POST['nome'].'",'.$_SESSION['cd'].','.$_POST['categoria'].')';
+					$res = $con->query($sql);
+					if($res){
+						msg("Jogo Cadastrado");
+					}else{
+						msg("Erro ao cadastrar jogo!");
+					}
+				}
+				$todos = ListarJogos($_SESSION['cd']);
+				while($jogo = $todos->fetch_object()){
+					echo '<a href="perguntas.php?game='.$jogo->cd.'"><button class="btn">'.$jogo->nome.'</button></a>';
+				}
+			?>
+		</div>
 	</div>	
 </body>
 </html>
-<?php 
-if(isset($_POST['nome'])){
-	$sql = 'INSERT INTO jogo (nome, id_usuario, id_categoria) VALUES ("'.$_POST['nome'].'",'.$_SESSION['cd'].','.$_POST['categoria'].')';
-	$res = $con->query($sql);
-	if($res){
-		msg("Jogo Cadastrado");
-	}else{
-		msg("Erro ao cadastrar jogo!");
-	}
-}
-?>
